@@ -1,18 +1,16 @@
 <template>
   <div class="container">
-    <LoginForm />
+    <RecipePreviewList page_type="favorite"  title="Favorite Recipes"/>
   </div>
 </template>
 
 <script>
-import LoginForm from "@/components/LoginForm.vue";
-
+import RecipePreviewList from "../components/RecipePreviewList";
 export default {
-  name: "Login",
   components: {
-    LoginForm
+    RecipePreviewList,
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

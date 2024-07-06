@@ -23,10 +23,42 @@ const routes = [
     component: () => import("./pages/SearchPage"),
   },
   {
-    path: "   ",
-    name: "recipe",
-    component: () => import("./pages/RecipeViewPage"),
+    path: "/about",
+    name: "about",
+    component: () => import("./pages/AboutPage"),
   },
+  {
+
+    path: "/favorites",
+    name: "favorites",
+    component: () => import("./pages/FavoritesPage"),
+    meta: {
+      authProtected: true
+    }
+  },
+  {
+
+    path: "/family-recipes",
+    name: "family-recipes",
+    component: () => import("./pages/FamilyPage"),
+    meta: {
+      authProtected: true
+    }
+  },
+  {
+
+    path: "/my-recipes",
+    name: "my-recipes",
+    component: () => import("./pages/MyRecipes"),
+    meta: {
+      authProtected: true
+    }
+  },
+
+  // add route for recepie page with parameter
+  { path: "/recipe/:id", name: "recipe", component: () => import("./pages/RecipeViewPage") }
+
+  ,
   {
     path: "*",
     name: "notFound",

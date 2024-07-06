@@ -1,25 +1,20 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link :to="{ name: 'main' }">Vue Recipes</router-link>|
-      <router-link :to="{ name: 'search' }">Search</router-link>|
-      {{ !$root.store.username }}
-      <span v-if="!$root.store.username">
-        Guest:
-        <router-link :to="{ name: 'register' }">Register</router-link>|
-        <router-link :to="{ name: 'login' }">Login</router-link>|
-      </span>
-      <span v-else>
-        {{ $root.store.username }}: <button @click="Logout">Logout</button>|
-      </span>
-    </div>
+  <div id="app" class="background">
+    <Navbar />
     <router-view />
   </div>
 </template>
 
 <script>
+
+// import Navbar
+import Navbar from "./components/Nvabar.vue";
+
 export default {
   name: "App",
+  components: {
+    Navbar
+  },
   methods: {
     Logout() {
       this.$root.store.logout();
@@ -36,8 +31,17 @@ export default {
 <style lang="scss">
 @import "@/scss/form-style.scss";
 
+.background {
+  background-image: url('/src/assets/images/background.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh; /* Ensure full viewport height coverage */
+  font-family: "Montserrat", sans-serif;
+  color: black;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family:  "Montserrat", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;

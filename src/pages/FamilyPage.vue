@@ -1,22 +1,19 @@
 <template>
   <div class="container">
-    <LoginForm />
+    <RecipePreviewList page_type="family" title="Family Recipes"/>
   </div>
 </template>
 
 <script>
-import LoginForm from "@/components/LoginForm.vue";
-
+import RecipePreviewList from "../components/RecipePreviewList";
 export default {
-  name: "Login",
   components: {
-    LoginForm
+    RecipePreviewList,
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css?family=Concert+One:400,700&display=swap');
-
 
 </style>
