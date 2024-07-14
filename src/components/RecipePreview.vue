@@ -1,35 +1,30 @@
 <template>
-  <router-link
-      :to="{ name: 'recipe', params: { id: recipe.id } }"
-      class="recipe-preview"
-  >
+  <router-link :to="{ name: 'recipe', params: { id: recipe.recipe_id, recipe_type: recipe_type } }"
+    class="recipe-preview">
     <div class="recipe-body">
-      <img :src="recipe.image" class="recipe-image" alt="Recipe image" />
+      <img :src="recipe.image_recipe" class="recipe-image" alt="Recipe image" />
     </div>
     <div class="recipe-footer">
-      <div :title="recipe.title" class="recipe-title">
-        {{ recipe.title }}
+      <div :title="recipe.recipe_name" class="recipe-title">
+        {{ recipe.recipe_name }}
       </div>
       <div class="recipe-overview">
         <div class="recipe-properties">
           <div class="diet-type">
-            <span v-if="recipe.vegan">🌱 Vegan</span>
-            <span v-else-if="recipe.vegetarian">🥗 Vegetarian</span>
+            <span v-if="recipe.is_vegan">🌱 Vegan</span>
+            <span v-else-if="recipe.is_vegeterian">🥗 Vegetarian</span>
           </div>
           <div class="gluten-free">
-            <span v-if="recipe.glutenFree">🌾 Gluten-Free</span>
+            <span v-if="recipe.is_glutenFree">🌾 Gluten-Free</span>
             <span v-else>&nbsp;</span>
           </div>
         </div>
 
         <div class="recipe-actions">
-          <div class="prep-time">⏱ {{ recipe.readyInMinutes }} minutes</div>
+          <div class="prep-time">⏱ {{ recipe.prepare_time }} minutes</div>
           <b-button @click.prevent="likeClicked" variant="outline" class="like-button">
             <span class="like-text">
-              <b-icon
-                  :icon="like_clicked ? 'heart-fill' : 'heart'"
-                  aria-hidden="true"
-              ></b-icon>
+              <b-icon :icon="like_clicked ? 'heart-fill' : 'heart'" aria-hidden="true"></b-icon>
               {{ likeCount }} likes
             </span>
           </b-button>
@@ -43,6 +38,10 @@
 export default {
   name: "RecipePreview",
   props: {
+    recipe_type: {
+      type: String,
+      required: true
+    },
     recipe: {
       type: Object,
       required: true,
@@ -55,7 +54,7 @@ export default {
   },
   computed: {
     likeCount() {
-      return this.like_clicked ? this.recipe.aggregateLikes + 1 : this.recipe.aggregateLikes;
+      return this.like_clicked ? this.recipe.likes + 1 : this.recipe.likes;
     },
   },
   methods: {
@@ -116,7 +115,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-align: center;
-  
+
 }
 
 .recipe-overview {
@@ -126,19 +125,23 @@ export default {
   padding: 0;
   list-style: none;
   height: 100px;
+
   .recipe-properties {
     display: flex;
     width: 100%;
     justify-content: center;
     align-items: center;
+
     div {
       margin-left: 15px;
     }
   }
 }
-.recipe-properties{
+
+.recipe-properties {
   margin-top: 15px;
 }
+
 .recipe-actions {
   margin-top: -18px;
   text-align: center;
@@ -146,6 +149,7 @@ export default {
   height: 100px;
   align-items: center;
   justify-content: center;
+
   span {
     font-size: 0.9rem;
   }

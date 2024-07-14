@@ -1,35 +1,36 @@
 <template>
   <div class="recipe-container" v-if="recipe">
     <div class="recipe-header">
-      <h1 class="recipe-title">{{ recipe.title }}</h1>
-      <img :src="recipe.image" alt="Recipe Image" class="recipe-image" />
+      <h1 class="recipe-title">{{ recipe.recipe_name }}</h1>
+      <img :src="recipe.image_recipe" alt="Recipe Image" class="recipe-image" />
       <div class="recipe-tags">
-        <span v-if="recipe.vegan">🌱 Vegan</span>
-        <span v-if="recipe.vegetarian">🥗 Vegetarian</span>
-        <span v-if="recipe.glutenFree">🌾 Gluten-Free</span>
+        <span v-if="recipe.is_vegan">🌱 Vegan</span>
+        <span v-if="recipe.is_vegeterian">🥗 Vegetarian</span>
+        <span v-if="recipe.is_glutenFree">🌾 Gluten-Free</span>
       </div>
       <div class="recipe-meta">
-        <p>⏱{{ recipe.readyInMinutes }} minutes</p>
+        <p>⏱ {{ recipe.prepare_time }} minutes</p>
         <p>
           <b-icon :icon="'heart'" aria-hidden="true"></b-icon>
-          {{ recipe.aggregateLikes }} likes
+          {{ recipe.likes }} likes
         </p>
-        <p>🍽{{ recipe.portions }} Serves</p>
+        <p>🍽 {{ recipe.portions }} Serves</p>
       </div>
     </div>
     <div class="recipe-body">
       <h2>Ingredients</h2>
       <ul class="ingredient-list">
-        <li v-for="ingredient in recipe.extendedIngredients" :key="ingredient.id">
-          {{ ingredient.original }}
+        <li v-for="ingredient in recipe.recipe_ingredient" :key="ingredient.name">
+          {{ ingredient.amount }} {{ ingredient.unitLong }} {{ ingredient.name }}
         </li>
       </ul>
       <h2>Instructions</h2>
-      <ul class="instruction-list">
-        <li v-for="(step, index) in splitInstructions" :key="index">
+      <ul class="instruction-list" v-if="recipe.recipe_instruction && recipe.recipe_instruction[0] && recipe.recipe_instruction[0].steps && recipe.recipe_instruction[0].steps.length">
+        <li v-for="step in recipe.recipe_instruction[0].steps" :key="step">
           {{ step }}
         </li>
       </ul>
+      <p v-else>No instructions available</p>
     </div>
   </div>
   <div v-else class="loading">Loading...</div>
@@ -47,14 +48,7 @@ export default {
   data() {
     return {
       recipe: null,
-      completedSteps: [],
     };
-  },
-  computed: {
-    splitInstructions() {
-      if (!this.recipe || !this.recipe.instructions) return [];
-      return this.recipe.instructions.split('\n\n<br>').map(step => step.replace(/\n\n/g, ''));
-    }
   },
   mounted() {
     this.fetchRecipe();
@@ -62,14 +56,46 @@ export default {
   methods: {
     async fetchRecipe() {
       try {
-        const recipeId = this.$route.params.id;
-        const { status, data } = mockGetRecipeFullDetails(recipeId);
-        if (status !== 200) {
+        const { id, recipe_type } = this.$route.params;
+        console.log(id, recipe_type);
+
+        axios.defaults.withCredentials = true;
+
+        let response;
+        if (recipe_type === "family") {
+          response = await axios.get(
+            this.$root.store.server_domain + `/users/familyRecipes/${id}`
+          );
+        } else if (recipe_type === "favorite") {
+          response = await axios.get(
+            this.$root.store.server_domain + `/users/favoriteRecipes/${id}`
+          );
+        } else if (recipe_type === "personal") {
+          response = await axios.get(
+            this.$root.store.server_domain + `/users/personalRecipes/${id}`
+          );
+        } else if (recipe_type === "last_viewed") {
+          response = await axios.get(
+            this.$root.store.server_domain + `/users/lastViewedRecipes/${id}`
+          );
+        } else  {
+          response = await axios.get(
+            this.$root.store.server_domain + `/recipes/${id}`
+          );
+        } 
+        // else {
+        //   this.$router.replace("/NotFound");
+        //   return;
+        // }
+
+        console.log(response);
+
+        if (!response || response.status !== 200 || !response.data) {
           this.$router.replace("/NotFound");
           return;
         }
 
-        this.recipe = data.recipe;
+        this.recipe = response.data.recipe;
       } catch (error) {
         console.log("error.response.status", error.data.status);
         this.$router.replace("/NotFound");
@@ -129,7 +155,8 @@ export default {
   display: flex;
   justify-content: center;
   gap: 20px;
-  align-items: center; /* Align items vertically center */
+  align-items: center;
+  /* Align items vertically center */
 }
 
 .recipe-body {

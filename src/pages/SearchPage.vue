@@ -147,6 +147,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import RecipePreview from "../components/RecipePreview";
 import { mockGetSearchRecipesPreview } from "../services/recipes";
 
@@ -183,50 +184,52 @@ export default {
     };
   },
   methods: {
-    // Perform Search
-    async onSearch() {
-      try {
-        const results = mockGetSearchRecipesPreview({
-          query: this.form.recipe_name,
-          cuisine: this.form.cuisine,
-          diet: this.form.diet,
-          intolerance: this.form.intolerance,
-          number: parseInt(this.form.amount, 10),
-          sort: this.form.sort
-        });
+  // Perform Search
+  async onSearch() {
+    try {
+      const { recipe_name, amount, sort, cuisine, diet, intolerance } = this.form;
+      
+      // Correcting the axios import
+      this.axios.defaults.withCredentials = true;
+      const response = await axios.get(
+        `${this.$root.store.server_domain}/recipes/searchRecipes/${recipe_name}/${amount}/${sort}/${cuisine}/${diet}/${intolerance}`
+      );
+      console.log(response);
+      
+      const results = response.data.recipes;
 
-        this.searchResults = results;
-        this.noResultsFound = results.length === 0;
+      this.searchResults = results;
+      this.noResultsFound = results.length === 0;
 
-        this.lastSearch = {
-          recipe_name: this.form.recipe_name,
-          amount: this.form.amount,
-          sort: this.form.sort,
-          cuisine: this.form.cuisine,
-          diet: this.form.diet,
-          intolerance: this.form.intolerance,
-          submitError: this.form.submitError,
-        };
-        localStorage.setItem("lastSearch", JSON.stringify(this.lastSearch));
-      } catch (err) {
-        console.log(err);
-        this.form.submitError = "Something went wrong, please try again.";
-      }
-    },
-    // Reset Search Form
-    onReset() {
-      this.form = {
-        recipe_name: "",
-        amount: "5",
-        sort: "popularity",
-        cuisine: "",
-        diet: "",
-        intolerance: "",
+      this.lastSearch = {
+        recipe_name: this.form.recipe_name,
+        amount: this.form.amount,
+        sort: this.form.sort,
+        cuisine: this.form.cuisine,
+        diet: this.form.diet,
+        intolerance: this.form.intolerance,
+        submitError: this.form.submitError,
       };
-      this.searchResults = [];
-      this.noResultsFound = false;
-    },
+      localStorage.setItem("lastSearch", JSON.stringify(this.lastSearch));
+    } catch (err) {
+      console.log(err);
+      this.form.submitError = "Something went wrong, please try again.";
+    }
   },
+  // Reset Search Form
+  onReset() {
+    this.form = {
+      recipe_name: "",
+      amount: "5",
+      sort: "popularity",
+      cuisine: "",
+      diet: "",
+      intolerance: "",
+    };
+    this.searchResults = [];
+    this.noResultsFound = false;
+  },
+},
 };
 </script>
 

@@ -10,30 +10,26 @@
 
     <div class="button-wrapper">
       <button
-          v-if="externalButtonAction && externalButtonLabel"
-          class="action-button"
-          @click="externalButtonAction()"
+        v-if="externalButtonAction && externalButtonLabel"
+        class="action-button"
+        @click="externalButtonAction()"
       >
         {{ externalButtonLabel }}
       </button>
-      <button
-          v-else-if="random"
-          class="action-button"
-          @click="updateRecipes(true)"
-      >
+      <button v-else-if="random" class="action-button" @click="updateRecipes(true)">
         Randomize
       </button>
       <div v-else class="button-placeholder"></div>
     </div>
 
     <b-row class="recipe-row">
-      <b-col v-for="r in recipes" :key="r.id" class="recipe-col">
-        <div class="recipe-wrapper" :class="{ 'blurred': blurRecipes }">
+      <b-col v-for="r in recipes" :key="r.recipe_id" class="recipe-col">
+        <div class="recipe-wrapper" :class="{ blurred: blurRecipes }">
           <div v-if="page_type === 'family'" class="whomade-andwhen">
-            <span>{{ r.whomade_andwhen }}</span>
+            Made by {{ r.who_made }} | {{ r.when_prepare }}
           </div>
           <div v-else class="whomade-placeholder"></div>
-          <RecipePreview class="recipe-preview" :recipe="r" />
+          <RecipePreview class="recipe-preview" :recipe="r" :recipe_type="page_type"/>
         </div>
       </b-col>
     </b-row>
@@ -41,18 +37,18 @@
 </template>
 
 <script>
+import axios from "axios";
 import RecipePreview from "./RecipePreview.vue";
-import { mockGetRecipesPreview } from "../services/recipes.js";
 
 export default {
   name: "RecipePreviewList",
   components: {
-    RecipePreview
+    RecipePreview,
   },
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     externalButtonLabel: {
       type: String,
@@ -62,21 +58,21 @@ export default {
     },
     random: {
       type: Boolean,
-      default: false
+      default: false,
     },
     page_type: {
       type: String,
       required: true,
-      default: 'main'
+      default: "random",
     },
     blurRecipes: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
   data() {
     return {
-      recipes: []
+      recipes: [],
     };
   },
   mounted() {
@@ -86,17 +82,41 @@ export default {
     async updateRecipes(random = false) {
       try {
         const amountToFetch = 3; // Set this to how many recipes you want to fetch
-        const response = mockGetRecipesPreview(this.page_type, amountToFetch, random);
-        console.log('response:', response);
+        axios.defaults.withCredentials = true;
+        let response;
+        console.log(this.$root.store.server_domain );
+        if (this.page_type === "family") {
+          response = await axios.get(
+            this.$root.store.server_domain + "/users/familyRecipes"
+          );
+        } else if (this.page_type === "personal") {
+          response = await axios.get(
+            this.$root.store.server_domain + "/users/personalRecipes"
+          );
+        } else if (this.page_type === "favorite") {
+          response = await axios.get(
+            this.$root.store.server_domain + "/users/favoriteRecipes"
+          );
+        } else if (this.page_type === "last_viewed") {
+          response = await axios.get(
+            this.$root.store.server_domain + "/users/lastViewedRecipes"
+          );
+        } else {
+          response = await axios.get(
+            this.$root.store.server_domain + "/recipes/randomRecipes"
+          );
+        }
+
+        console.log("response:", response);
         const recipes = response.data.recipes;
         this.recipes = [];
         this.recipes.push(...recipes);
-        console.log('recipes:', this.recipes);
+        console.log("recipes:", this.recipes);
       } catch (error) {
-        console.log('Error fetching recipes:', error);
+        console.log("Error fetching recipes:", error);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -118,10 +138,9 @@ export default {
   font-weight: bold;
   text-align: center;
   padding-top: 20px;
-  font-family: 'Pacifico', cursive;
-  letter-spacing: 0.14em; /* Adjust the spacing between characters */
-
-
+  font-family: "Pacifico", cursive;
+  letter-spacing: 0.14em;
+  /* Adjust the spacing between characters */
 }
 
 .button-wrapper {

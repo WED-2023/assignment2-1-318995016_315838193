@@ -2,6 +2,7 @@
   <div class="register-form">
     <h1 class="title">Register</h1>
     <b-form @submit.prevent="onRegister" @reset.prevent="onReset">
+      <!-- Username Field -->
       <b-form-group
         id="input-group-username"
         label-cols-sm="3"
@@ -28,6 +29,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- First Name Field -->
       <b-form-group
         id="input-group-firstName"
         label-cols-sm="3"
@@ -36,15 +38,16 @@
       >
         <b-form-input
           id="firstName"
-          v-model="$v.form.firstName.$model"
+          v-model="$v.form.firstname.$model"
           type="text"
-          :state="validateState('firstName')"
+          :state="validateState('firstname')"
         ></b-form-input>
-        <b-form-invalid-feedback v-if="!$v.form.firstName.required">
+        <b-form-invalid-feedback v-if="!$v.form.firstname.required">
           First name is required
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Last Name Field -->
       <b-form-group
         id="input-group-lastName"
         label-cols-sm="3"
@@ -53,15 +56,16 @@
       >
         <b-form-input
           id="lastName"
-          v-model="$v.form.lastName.$model"
+          v-model="$v.form.lastname.$model"
           type="text"
-          :state="validateState('lastName')"
+          :state="validateState('lastname')"
         ></b-form-input>
-        <b-form-invalid-feedback v-if="!$v.form.lastName.required">
+        <b-form-invalid-feedback v-if="!$v.form.lastname.required">
           Last name is required
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Country Field -->
       <b-form-group
         id="input-group-country"
         label-cols-sm="3"
@@ -79,6 +83,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Email Field -->
       <b-form-group
         id="input-group-email"
         label-cols-sm="3"
@@ -99,6 +104,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Password Field -->
       <b-form-group
         id="input-group-password"
         label-cols-sm="3"
@@ -125,6 +131,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Confirm Password Field -->
       <b-form-group
         id="input-group-confirmedPassword"
         label-cols-sm="3"
@@ -147,6 +154,7 @@
         </b-form-invalid-feedback>
       </b-form-group>
 
+      <!-- Form Buttons -->
       <b-form-group class="text-center">
         <b-button type="reset" class="buttons">Reset</b-button>
         <b-button type="submit" class="buttons">Register</b-button>
@@ -168,18 +176,20 @@
   </div>
 </template>
 
+
 <script>
 import { required, minLength, maxLength, alpha, sameAs, email } from "vuelidate/lib/validators";
-import { mockRegister } from "../services/auth.js";
+import { validationMixin } from "vuelidate";
 
 export default {
   name: "Register",
+  mixins: [validationMixin],
   data() {
     return {
       form: {
         username: "",
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         country: null,
         password: "",
         confirmedPassword: "",
@@ -197,8 +207,8 @@ export default {
         length: (u) => minLength(3)(u) && maxLength(8)(u),
         alpha
       },
-      firstName: { required },
-      lastName: { required },
+      firstname: { required },
+      lastname: { required },
       country: { required },
       email: { required, email },
       password: {
@@ -230,26 +240,23 @@ export default {
       const { $dirty, $error } = this.$v.form[param];
       return $dirty ? !$error : null;
     },
-    async checkUsername() {
-      try {
-        this.usernameExists = await checkUsernameExists(this.form.username);
-      } catch (error) {
-        console.error("Error checking username:", error);
-      }
-    },
     async Register() {
       try {
         const userDetails = {
           username: this.form.username,
-          firstName: this.form.firstName,
-          lastName: this.form.lastName,
+          firstname: this.form.firstname,
+          lastname: this.form.lastname,
           country: this.form.country,
           email: this.form.email,
           password: this.form.password
         };
-
-        const response = await mockRegister(userDetails);
-
+        console.log(userDetails);
+        const url = this.$root.store.server_domain  + "/Register";
+        this.axios.defaults.withCredentials = true;
+        const response = await this.axios.post(
+        url,
+          userDetails
+        );
         this.$router.push("/login");
       } catch (err) {
         console.log(err.response);
@@ -261,18 +268,13 @@ export default {
       if (this.$v.form.$anyError) {
         return;
       }
-      this.checkUsername().then(() => {
-        if (this.usernameExists) {
-          return;
-        }
-        this.Register();
-      });
+      this.Register();
     },
     onReset() {
       this.form = {
         username: "",
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         country: null,
         password: "",
         confirmedPassword: "",
@@ -284,6 +286,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style lang="scss" scoped>

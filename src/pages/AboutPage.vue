@@ -36,7 +36,7 @@
               <b>Technologies Used:</b>
               <ul>
                 <li>Frontend: Vue.js, Bootstrap-Vue, SCSS</li>
-                <li>Backend: Node.js, Express, MongoDB</li>
+                <li>Backend: Node.js, Express, MySQL</li>
                 <li>Other: Axios for API calls, Bootstrap for responsive design, Git for version control</li>
               </ul>
             </b-card-text>

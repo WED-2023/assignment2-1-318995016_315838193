@@ -3,11 +3,11 @@
     <h1 class="title">Main Page</h1>
     <div class="content">
       <div class="left">
-        <RecipePreviewList page_type="main" title="Explore this recipes" class="RandomRecipes" random/>
+        <RecipePreviewList page_type="random" title="Explore this recipes" class="RandomRecipes" random/>
       </div>
-      <div class="right">
+      <div class="right" >
         <RecipePreviewList
-            page_type="main"
+            page_type="last_viewed"
             :blur-recipes="shouldBlurRecipes"
             title="Last Watches Recipes"
             class="LastViewedRecipes"

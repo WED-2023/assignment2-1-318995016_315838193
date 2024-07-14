@@ -55,10 +55,12 @@ const routes = [
     }
   },
 
-  // add route for recepie page with parameter
-  { path: "/recipe/:id", name: "recipe", component: () => import("./pages/RecipeViewPage") }
-
-  ,
+  {
+    // Add route for recipe page with id and recipe_type parameters
+    path: "/recipe/:id/:recipe_type",
+    name: "recipe",
+    component: () => import("./pages/RecipeViewPage"),
+  },
   {
     path: "*",
     name: "notFound",
