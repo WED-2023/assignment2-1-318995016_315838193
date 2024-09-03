@@ -18,6 +18,12 @@
       </div>
     </div>
     <div class="recipe-body">
+      <h2>Summary</h2>
+      <ul class="summary">
+        <li>
+          {{ recipe.summary }}
+        </li>
+      </ul>
       <h2>Ingredients</h2>
       <ul class="ingredient-list">
         <li v-for="ingredient in recipe.recipe_ingredient" :key="ingredient.name">
@@ -25,7 +31,8 @@
         </li>
       </ul>
       <h2>Instructions</h2>
-      <ul class="instruction-list" v-if="recipe.recipe_instruction && recipe.recipe_instruction[0] && recipe.recipe_instruction[0].steps && recipe.recipe_instruction[0].steps.length">
+      <ul class="instruction-list"
+        v-if="recipe.recipe_instruction && recipe.recipe_instruction[0] && recipe.recipe_instruction[0].steps && recipe.recipe_instruction[0].steps.length">
         <li v-for="step in recipe.recipe_instruction[0].steps" :key="step">
           {{ step }}
         </li>
@@ -54,12 +61,29 @@ export default {
     this.fetchRecipe();
   },
   methods: {
+    async addToView(recipe_type) {
+      if (this.$root.store.username) {
+        console.log("add to viewed list");
+        try {
+          this.axios.defaults.withCredentials = true;
+console.log(this.type);
+          // Make a PUT request to the server to add the recipe to the user's viewed list
+          const response = await axios.put(
+            `${this.$root.store.server_domain}/users/lastViewedRecipes/${this.recipe.recipe_id}/${recipe_type}`
+          );
+
+          console.log(response);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    },
     async fetchRecipe() {
       try {
         const { id, recipe_type } = this.$route.params;
         console.log(id, recipe_type);
 
-        axios.defaults.withCredentials = true;
+        this.axios.defaults.withCredentials = true;
 
         let response;
         if (recipe_type === "family") {
@@ -68,7 +92,7 @@ export default {
           );
         } else if (recipe_type === "favorite") {
           response = await axios.get(
-            this.$root.store.server_domain + `/users/favoriteRecipes/${id}`
+            this.$root.store.server_domain + `/users/favoriteRecipes/${id}/${recipe_type}`
           );
         } else if (recipe_type === "personal") {
           response = await axios.get(
@@ -78,11 +102,11 @@ export default {
           response = await axios.get(
             this.$root.store.server_domain + `/users/lastViewedRecipes/${id}`
           );
-        } else  {
+        } else {
           response = await axios.get(
             this.$root.store.server_domain + `/recipes/${id}`
           );
-        } 
+        }
         // else {
         //   this.$router.replace("/NotFound");
         //   return;
@@ -96,6 +120,9 @@ export default {
         }
 
         this.recipe = response.data.recipe;
+
+        // After successfully fetching the recipe, add it to the viewed list
+        this.addToView(recipe_type);
       } catch (error) {
         console.log("error.response.status", error.data.status);
         this.$router.replace("/NotFound");
@@ -173,13 +200,15 @@ export default {
 }
 
 .ingredient-list,
-.instruction-list {
+.instruction-list,
+.summary {
   list-style: none;
   padding: 0;
 }
 
 .ingredient-list li,
-.instruction-list li {
+.instruction-list li,
+.summary li {
   background-color: #f9f9f9;
   margin: 5px 0;
   padding: 10px 15px;
@@ -190,7 +219,8 @@ export default {
 }
 
 .ingredient-list li:hover,
-.instruction-list li:hover {
+.instruction-list li:hover,
+.summary li:hover {
   background-color: #ffeeba;
 }
 

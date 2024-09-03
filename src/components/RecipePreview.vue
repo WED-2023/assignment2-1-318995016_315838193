@@ -21,6 +21,8 @@
         </div>
 
         <div class="recipe-actions">
+          <b-icon class="eye-icon" :icon="isLastViewed ? 'eye' : 'eye-slash'" aria-hidden="true"></b-icon>
+
           <div class="prep-time">⏱ {{ recipe.prepare_time }} minutes</div>
           <b-button @click.prevent="likeClicked" variant="outline" class="like-button">
             <span class="like-text">
@@ -50,18 +52,73 @@ export default {
   data() {
     return {
       like_clicked: false,
+      isLastViewed: false
     };
+  },
+  mounted() {
+    this.checkIfLiked();
+    this.checkIfViewed();
   },
   computed: {
     likeCount() {
-      return this.like_clicked ? this.recipe.likes + 1 : this.recipe.likes;
+      return this.recipe.likes;
     },
   },
   methods: {
-    likeClicked() {
-      this.like_clicked = !this.like_clicked;
+    async checkIfLiked() {
+      try {
+        this.axios.defaults.withCredentials = true;
+
+        const response = await this.axios.get(`${this.$root.store.server_domain}/users/favoriteRecipes/${this.recipe.recipe_id}/${this.recipe_type}`);
+        if (response.data.isFavorite) {
+          this.like_clicked = true;
+        }
+      } catch (error) {
+        console.error('Error checking if recipe is liked:', error);
+      }
     },
-  },
+    async checkIfViewed() {
+      try {
+        this.axios.defaults.withCredentials = true;
+
+        const response = await this.axios.get(`${this.$root.store.server_domain}/users/lastViewedRecipes/${this.recipe.recipe_id}/${this.recipe_type}`);
+        console.log("respine",response);
+        if (response && response.data && response.data.isLastViewed) {
+          this.lastViewed = true;
+        }
+      } catch (error) {
+        console.error('Error checking if recipe is viewed:', error);
+      }
+    },
+    async likeClicked() {
+      this.axios.defaults.withCredentials = true;
+
+      if (this.like_clicked) return; // Prevent double clicking
+
+      try {
+        this.like_clicked = true;
+        this.recipe.likes += 1; // Increment likes in the UI
+        // Send request to the server to increment likes and add to favorites
+        const url = `${this.$root.store.server_domain}/users/favoriteRecipes/${this.recipe.recipe_id}/${this.recipe_type}`;
+
+        await this.axios.post(url);
+
+        this.$bvToast.toast('Recipe liked and added to favorites!', {
+          title: 'Success',
+          variant: 'success',
+          solid: true
+        });
+      } catch (error) {
+        console.error('Error liking the recipe:', error);
+        this.$bvToast.toast('Failed to like the recipe.', {
+          title: 'Error',
+          variant: 'danger',
+          solid: true
+        });
+      }
+    },
+  }
+  ,
 };
 </script>
 
@@ -138,6 +195,10 @@ export default {
   }
 }
 
+.eye-icon{
+  font-size: 24px;
+  margin-right: 10px;
+}
 .recipe-properties {
   margin-top: 15px;
 }

@@ -23,7 +23,7 @@
     </div>
 
     <b-row class="recipe-row">
-      <b-col v-for="r in recipes" :key="r.recipe_id" class="recipe-col">
+      <b-col v-for="(r, index) in recipes" :key="index" class="recipe-col">
         <div class="recipe-wrapper" :class="{ blurred: blurRecipes }">
           <div v-if="page_type === 'family'" class="whomade-andwhen">
             Made by {{ r.who_made }} | {{ r.when_prepare }}
