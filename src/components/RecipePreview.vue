@@ -81,10 +81,9 @@ export default {
       try {
         this.axios.defaults.withCredentials = true;
 
-        const response = await this.axios.get(`${this.$root.store.server_domain}/users/lastViewedRecipes/${this.recipe.recipe_id}/${this.recipe_type}`);
-        console.log("respine",response);
+        const response = await this.axios.get(`${this.$root.store.server_domain}/users/lastViewedRecipes/${this.recipe.recipe_id}`);
         if (response && response.data && response.data.isLastViewed) {
-          this.lastViewed = true;
+          this.isLastViewed = true;
         }
       } catch (error) {
         console.error('Error checking if recipe is viewed:', error);
