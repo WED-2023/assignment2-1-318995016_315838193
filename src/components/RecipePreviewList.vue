@@ -209,7 +209,7 @@ export default {
 .whomade-andwhen {
   font-size: 1.2em;
   font-style: italic;
-  color: white;
+  color: black;
   background-color: rgb(165, 107, 57);
   border-radius: 8px;
   padding: 5px 10px;
