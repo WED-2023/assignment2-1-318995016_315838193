@@ -134,7 +134,7 @@ export default {
 
 .list-title {
   font-size: 2.5em;
-  color: white;
+  color: black;
   font-weight: bold;
   text-align: center;
   padding-top: 20px;
