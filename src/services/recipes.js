@@ -13,7 +13,6 @@ const recipeData = {
 
 export function mockGetRecipesPreview(type, amount = 1, random = false) {
   let recipe_preview_json = recipeData[type];
-  console.log(recipe_preview.length);
   let recipes = [];
   const length = amount > recipe_preview_json.length ? recipe_preview_json.length : amount;
 

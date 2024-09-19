@@ -66,13 +66,11 @@ export default {
         console.log("add to viewed list");
         try {
           this.axios.defaults.withCredentials = true;
-console.log(this.type);
           // Make a PUT request to the server to add the recipe to the user's viewed list
           const response = await axios.put(
             `${this.$root.store.server_domain}/users/lastViewedRecipes/${this.recipe.recipe_id}/${recipe_type}`
           );
 
-          console.log(response);
         } catch (error) {
           console.error(error);
         }
@@ -81,7 +79,6 @@ console.log(this.type);
     async fetchRecipe() {
       try {
         const { id, recipe_type } = this.$route.params;
-        console.log(id, recipe_type);
 
         this.axios.defaults.withCredentials = true;
 
@@ -112,7 +109,6 @@ console.log(this.type);
         //   return;
         // }
 
-        console.log(response);
 
         if (!response || response.status !== 200 || !response.data) {
           this.$router.replace("/NotFound");

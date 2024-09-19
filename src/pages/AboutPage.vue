@@ -196,8 +196,8 @@
   }
   
   .circle-container {
-    width: 180px; /* Adjust container size to match thumbnail size */
-    height: 180px; /* Adjust container size to match thumbnail size */
+    width: 180px; 
+    height: 180px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -208,21 +208,21 @@
   }
   
   .project-thumbnail-together {
-    width: 100%; /* Ensure image fills the container */
-    height: auto; /* Maintain aspect ratio */
+    width: 100%; 
+    height: auto; 
     transform: translateY(20%); /* Adjust vertical position */
   }
   
   .project-thumbnail-noam,
   .project-thumbnail-linoy {
-    width: 100%; /* Ensure image fills the container */
+    width: 100%; 
     height: auto; /* Maintain aspect ratio */
     
   }
   
   .bigger-circle {
-    width: 150px; /* Larger circle size */
-    height: 150px; /* Larger circle size */
+    width: 150px; 
+    height: 150px; 
   }
   
   </style>

@@ -107,11 +107,9 @@ export default {
           );
         }
 
-        console.log("response:", response);
         const recipes = response.data.recipes;
         this.recipes = [];
         this.recipes.push(...recipes);
-        console.log("recipes:", this.recipes);
       } catch (error) {
         console.log("Error fetching recipes:", error);
       }

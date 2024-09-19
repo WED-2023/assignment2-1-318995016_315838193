@@ -194,7 +194,6 @@ export default {
       const response = await axios.get(
         `${this.$root.store.server_domain}/recipes/searchRecipes/${recipe_name}/${amount}/${sort}/${cuisine}/${diet}/${intolerance}`
       );
-      console.log(response);
       
       const results = response.data.recipes;
 

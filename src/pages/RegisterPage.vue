@@ -250,7 +250,6 @@ export default {
           email: this.form.email,
           password: this.form.password
         };
-        console.log(userDetails);
         const url = this.$root.store.server_domain  + "/Register";
         this.axios.defaults.withCredentials = true;
         const response = await this.axios.post(

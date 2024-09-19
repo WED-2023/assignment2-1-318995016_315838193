@@ -106,7 +106,6 @@ export default {
         this.$root.store.login(this.form.username);
         this.$router.push("/");
       } catch (err) {
-        // console.log(err.response);
         this.form.submitError = err.response.data.message;
       }
     },
